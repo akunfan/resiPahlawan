@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Eiger Store - Final System</title>
+    <style>
+      :root {
+        --primary-red: #d9534f;
+        --sidebar-width: 480px;
+      }
+
+      body {
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        background-color: #ffffff;
+      }
+
+      .input-panel {
+        width: var(--sidebar-width);
+        padding: 30px;
+        background: #ffffff;
+        border-right: 1px solid #cbd5e1;
+        overflow-y: auto;
+        box-sizing: border-box;
+        flex-shrink: 0;
+      }
+
+      .preview-panel {
+        flex-grow: 1;
+        padding: 40px;
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        background: #1e293b;
+        box-sizing: border-box;
+      }
+
+      h2 {
+        font-size: 20px;
+        margin-top: 0;
+        color: #0f172a;
+        border-bottom: 2px solid var(--primary-red);
+        padding-bottom: 8px;
+        margin-bottom: 25px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        font-weight: 700;
+        font-size: 12px;
+        margin-bottom: 6px;
+        color: #475569;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 13px;
+        box-sizing: border-box;
+      }
+
+      .saved-address-box {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+      }
+      .sync-btn {
+        background: #0f172a;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: bold;
+        margin-top: 8px;
+        width: 100%;
+        transition: 0.2s;
+      }
+      .sync-btn:hover {
+        background: #334155;
+      }
+
+      .check-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      .check-group input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .item-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .btn-add {
+        background: #f1f5f9;
+        color: #0f172a;
+        border: 1px solid #cbd5e1;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: 600;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+      .btn-print {
+        background: var(--primary-red);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: 800;
+        font-size: 16px;
+        margin-top: 20px;
+      }
+
+      #resi-label {
+        width: 100mm;
+        background: white;
+        padding: 22px;
+        color: black;
+        box-sizing: border-box;
+        line-height: 1.4;
+        border: 1px solid #000;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      }
+
+      .header-resi {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+      }
+      .logo-eiger {
+        height: 18px;
+      }
+      .logo-kurir {
+        height: 26px;
+        max-width: 90px;
+        object-fit: contain;
+      }
+
+      .address-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 10px;
+      }
+      .lbl-title {
+        font-size: 9px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #000;
+        margin-bottom: 3px;
+        display: block;
+      }
+
+      .name-txt {
+        font-size: 13px;
+        font-weight: bold;
+        display: block;
+        text-transform: uppercase;
+      }
+      .addr-txt {
+        font-size: 11px;
+        margin: 0;
+        line-height: 1.3;
+      }
+
+      .kurir-badge {
+        display: inline-block;
+        margin-top: 8px;
+        font-weight: 900;
+        font-size: 12px;
+        color: var(--primary-red);
+        border: 1px solid var(--primary-red);
+        padding: 3px 8px;
+        white-space: nowrap;
+      }
+
+      .item-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .item-table th {
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+        text-align: left;
+        padding: 8px 4px;
+        font-size: 10px;
+      }
+      .item-table td {
+        padding: 8px 4px;
+        border-bottom: 1px dashed #ccc;
+        font-size: 11px;
+      }
+
+      .footer {
+        margin-top: 30px;
+        border-top: 1px dashed #000;
+        padding-top: 15px;
+      }
+      .footer-cols {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 12px;
+        font-size: 9px;
+        font-weight: 700;
+        opacity: 0.8;
+        text-transform: uppercase;
+      }
+
+      @media print {
+        .input-panel {
+          display: none;
+        }
+        .preview-panel {
+          padding: 0;
+          background: white;
+          display: block;
+        }
+        #resi-label {
+          position: absolute;
+          top: 0;
+          left: 0;
+          box-shadow: none;
+          border: 1px solid #000;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="input-panel">
+      <h2>Eiger Store Pahlawan</h2>
+
+      <div class="saved-address-box">
+        <label>Database Alamat (Google Sheets)</label>
+        <select id="select-saved" onchange="loadAddress()">
+          <option value="">-- Klik Sinkronkan --</option>
+        </select>
+        <button class="sync-btn" onclick="fetchSheetData()">
+          SINKRONKAN DATA SEKARANG
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label>Ekspedisi</label>
+        <select id="in-kurir" onchange="update()">
+          <option value="J&T COD">J&T COD</option>
+          <option value="JNE COD">JNE COD</option>
+        </select>
+      </div>
+
+      <div class="check-group">
+        <input
+          type="checkbox"
+          id="in-use-asuransi"
+          onchange="toggleAsuransi()"
+        />
+        <span>Aktifkan Asuransi</span>
+      </div>
+
+      <div id="box-ammount" style="display: none" class="form-group">
+        <label>Nominal Barang (Asuransi)</label>
+        <input
+          type="text"
+          id="in-ammount"
+          placeholder="Contoh: Rp 500.000"
+          oninput="update()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Nama Penerima</label>
+        <input
+          type="text"
+          id="in-penerima"
+          placeholder="Nama..."
+          oninput="update()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Alamat Penerima</label>
+        <textarea
+          id="in-alamat"
+          rows="3"
+          placeholder="Jl. Alamat Lengkap..."
+          oninput="update()"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Total Berat (KG)</label>
+        <input
+          type="text"
+          id="in-total-weight"
+          value="1"
+          onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+          oninput="this.value = this.value.replace(/[^0-9]/g, ''); update();"
+        />
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0" />
+
+      <label>Daftar Barang & Qty</label>
+      <div id="items-container">
+        <div class="item-row">
+          <input
+            type="text"
+            class="it-name"
+            placeholder="Nama Produk"
+            oninput="update()"
+            style="flex: 4"
+          />
+          <input
+            type="number"
+            class="it-qty"
+            value="1"
+            oninput="update()"
+            style="flex: 1"
+          />
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem()">+ Tambah Produk</button>
+
+      <div class="form-group" style="margin-top: 15px">
+        <label>Catatan (Note)</label>
+        <input type="text" id="in-info" placeholder="-" oninput="update()" />
+      </div>
+
+      <button class="btn-print" onclick="window.print()">PRINT RESI</button>
+    </div>
+
+    <div class="preview-panel">
+      <div id="resi-label">
+        <div class="header-resi">
+          <img
+            class="logo-eiger"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Eiger_logo.svg/512px-Eiger_logo.svg.png"
+          />
+          <img id="out-logo-kurir" class="logo-kurir" src="" />
+        </div>
+
+        <div class="address-grid">
+          <div>
+            <span class="lbl-title">Penerima</span>
+            <span id="out-penerima" class="name-txt">NAMA PENERIMA</span>
+            <p id="out-alamat" class="addr-txt">
+              Alamat tujuan akan tampil secara simetris di sini...
+            </p>
+          </div>
+          <div style="text-align: right">
+            <span class="lbl-title">Pengirim</span>
+            <span class="name-txt">ST EG PAHLAWAN KEDIRI</span>
+            <p class="addr-txt">
+              Jl. Pahlawan Kusuma Bangsa No.05, Pare, Kab. Kediri
+            </p>
+            <span id="out-kurir-text" class="kurir-badge">J&T COD</span>
+            <div style="font-size: 11px; font-weight: bold; margin-top: 5px">
+              BERAT: <span id="out-total-weight">1</span> KG
+            </div>
+            <span
+              id="out-ammount-display"
+              style="
+                display: none;
+                font-size: 10px;
+                font-weight: bold;
+                color: #d9534f;
+                margin-top: 2px;
+              "
+            ></span>
+          </div>
+        </div>
+
+        <table class="item-table">
+          <thead>
+            <tr>
+              <th style="width: 80%">Nama Produk</th>
+              <th style="text-align: right; width: 20%">Qty</th>
+            </tr>
+          </thead>
+          <tbody id="out-table"></tbody>
+        </table>
+
+        <div class="footer">
+          <div style="font-size: 10px">
+            <strong>CATATAN:</strong> <span id="out-info">-</span>
+          </div>
+          <div class="footer-cols">
+            <span>Eiger Store Pare Kediri</span>
+            <span>@eiger.pare</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const CSV_URL =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vSdKv0DKKXD9MM-TskgbqfExjisAal9Rwx6RfgXmGvDHyBzgShrteIb7sp1YbSn0-X_vnr-vA-R-l18/pub?output=csv";
+
+      async function fetchSheetData() {
+        const btn = document.querySelector(".sync-btn");
+        btn.innerText = "SINKRONISASI...";
+        try {
+          const response = await fetch(CSV_URL);
+          const data = await response.text();
+          const rows = data.split("\n").slice(1);
+          const select = document.getElementById("select-saved");
+          select.innerHTML =
+            '<option value="">-- Pilih Alamat Pelanggan --</option>';
+
+          rows.forEach((row) => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols.length >= 2) {
+              const nama = cols[0].replace(/"/g, "").trim();
+              const alamat = cols[1].replace(/"/g, "").trim();
+              if (nama !== "") {
+                const opt = document.createElement("option");
+                opt.value = JSON.stringify({ nama: nama, alamat: alamat });
+                opt.textContent = nama;
+                select.appendChild(opt);
+              }
+            }
+          });
+          btn.innerText = "DATA TERUPDATE!";
+          setTimeout(() => (btn.innerText = "SINKRONKAN DATA SEKARANG"), 2000);
+        } catch (e) {
+          btn.innerText = "GAGAL SINKRON";
+        }
+      }
+
+      function loadAddress() {
+        const val = document.getElementById("select-saved").value;
+        if (val) {
+          const data = JSON.parse(val);
+          document.getElementById("in-penerima").value = data.nama;
+          document.getElementById("in-alamat").value = data.alamat;
+          update();
+        }
+      }
+
+      function toggleAsuransi() {
+        document.getElementById("box-ammount").style.display =
+          document.getElementById("in-use-asuransi").checked ? "block" : "none";
+        update();
+      }
+
+      function addItem() {
+        const div = document.createElement("div");
+        div.className = "item-row";
+        div.innerHTML = `<input type="text" class="it-name" placeholder="Nama Produk" oninput="update()" style="flex:4"><input type="number" class="it-qty" value="1" oninput="update()" style="flex:1">`;
+        document.getElementById("items-container").appendChild(div);
+      }
+
+      function update() {
+        document.getElementById("out-penerima").innerText =
+          document.getElementById("in-penerima").value || "NAMA PENERIMA";
+        document.getElementById("out-alamat").innerText =
+          document.getElementById("in-alamat").value || "Alamat tujuan...";
+        document.getElementById("out-info").innerText =
+          document.getElementById("in-info").value || "-";
+        document.getElementById("out-total-weight").innerText =
+          document.getElementById("in-total-weight").value || 0;
+
+        let kurir = document.getElementById("in-kurir").value;
+        let isAsuransi = document.getElementById("in-use-asuransi").checked;
+        document.getElementById("out-kurir-text").innerText = isAsuransi
+          ? kurir + " ASURANSI"
+          : kurir;
+
+        let val = document.getElementById("in-ammount").value;
+        let outAmm = document.getElementById("out-ammount-display");
+        if (isAsuransi && val) {
+          outAmm.innerText = "Value: " + val;
+          outAmm.style.display = "block";
+        } else {
+          outAmm.style.display = "none";
+        }
+
+        const logo = document.getElementById("out-logo-kurir");
+        logo.src = kurir.includes("J&T")
+          ? "https://upload.wikimedia.org/wikipedia/id/thumb/7/77/Logo_J%26T_Express.svg/512px-Logo_J%26T_Express.svg.png"
+          : "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/New_JNE_Logo.svg/512px-New_JNE_Logo.svg.png";
+
+        const names = document.getElementsByClassName("it-name");
+        const qtys = document.getElementsByClassName("it-qty");
+        const table = document.getElementById("out-table");
+        table.innerHTML = "";
+        for (let i = 0; i < names.length; i++) {
+          if (names[i].value) {
+            table.innerHTML += `<tr><td>${names[i].value}</td><td style="text-align: right; font-weight:bold;">${qtys[i].value}</td></tr>`;
+          }
+        }
+      }
+      update();
+    </script>
+  </body>
+</html>
