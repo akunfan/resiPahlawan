@@ -147,21 +147,26 @@
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
       }
 
+      /* Cari bagian .logo-eiger dan .logo-kurir di dalam kode Anda, lalu ganti dengan ini: */
+
+      .logo-eiger {
+        height: 55px; /* Sebelumnya 18px, dinaikkan agar lebih gagah */
+        width: auto;
+      }
+
+      .logo-kurir {
+        height: 55px; /* Sebelumnya 26px, dinaikkan agar brand kurir terlihat jelas */
+        max-width: 120px;
+        object-fit: contain;
+      }
+
       .header-resi {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #000;
-        padding-bottom: 10px;
-        margin-bottom: 12px;
-      }
-      .logo-eiger {
-        height: 18px;
-      }
-      .logo-kurir {
-        height: 26px;
-        max-width: 90px;
-        object-fit: contain;
+        border-bottom: 2px solid #000; /* Garis dibuat sedikit lebih tebal */
+        padding-bottom: 1px;
+        margin-bottom: 15px;
       }
 
       .address-grid {
@@ -360,10 +365,7 @@
     <div class="preview-panel">
       <div id="resi-label">
         <div class="header-resi">
-          <img
-            class="logo-eiger"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Eiger_logo.svg/512px-Eiger_logo.svg.png"
-          />
+          <img class="logo-eiger" src="img/eiger.png" />
           <img id="out-logo-kurir" class="logo-kurir" src="" />
         </div>
 
@@ -504,9 +506,7 @@
         }
 
         const logo = document.getElementById("out-logo-kurir");
-        logo.src = kurir.includes("J&T")
-          ? "https://upload.wikimedia.org/wikipedia/id/thumb/7/77/Logo_J%26T_Express.svg/512px-Logo_J%26T_Express.svg.png"
-          : "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/New_JNE_Logo.svg/512px-New_JNE_Logo.svg.png";
+        logo.src = kurir.includes("J&T") ? "img/jnt.png" : "img/jne.png";
 
         const names = document.getElementsByClassName("it-name");
         const qtys = document.getElementsByClassName("it-qty");
