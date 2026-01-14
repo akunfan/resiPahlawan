@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flayering Lek</title>
+    <style>
+      :root {
+        --sidebar-width: 260px;
+        --print-line: #999;
+      }
+
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        background-color: #1a1a1a; /* Background luar gelap */
+      }
+
+      /* SIDEBAR KIRI - FULL DROPZONE */
+      .sidebar {
+        width: var(--sidebar-width);
+        height: 100%;
+        background: #2d2d2d;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #000;
+      }
+
+      .drop-zone {
+        flex: 1; /* Memenuhi seluruh sisa ruang sidebar */
+        margin: 15px;
+        border: 2px dashed #555;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #888;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .drop-zone:hover,
+      .drop-zone.drag-over {
+        background: #3d3d3d;
+        border-color: #fff;
+        color: #fff;
+      }
+
+      /* TOMBOL PRINT DI BAWAH DROPZONE */
+      .btn-print {
+        margin: 0 15px 15px 15px;
+        background: #ffffff;
+        color: #000;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn-print:hover {
+        background: #e0e0e0;
+      }
+
+      /* AREA PREVIEW KANAN */
+      .preview-area {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #1a1a1a;
+        padding: 20px;
+      }
+
+      /* KERTAS A4 */
+      .a4-paper {
+        width: 210mm;
+        height: 297mm;
+        background: white;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        position: relative;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+        transform: scale(0.48); /* Menyesuaikan agar pas di layar */
+      }
+
+      /* GARIS POTONG TENGAH */
+      .a4-paper::before,
+      .a4-paper::after {
+        content: "";
+        position: absolute;
+        z-index: 10;
+        border-color: var(--print-line);
+        pointer-events: none;
+      }
+
+      .a4-paper::before {
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        border-left: 1px dashed var(--print-line);
+      }
+
+      .a4-paper::after {
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 0;
+        border-top: 1px dashed var(--print-line);
+      }
+
+      .image-slot {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .image-slot img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        display: none;
+      }
+
+      /* PRINT LOGIC */
+      @media print {
+        .sidebar {
+          display: none !important;
+        }
+        .preview-area {
+          padding: 0;
+          background: white;
+        }
+        .a4-paper {
+          transform: scale(1) !important;
+          box-shadow: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        .a4-paper::before,
+        .a4-paper::after {
+          display: block !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="drop-zone" id="dropZone">
+        <div style="font-size: 40px; margin-bottom: 10px">📄</div>
+        <b>HMMM</b>
+        <p style="font-size: 12px; opacity: 0.6">sereten rene gambare</p>
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          style="display: none"
+        />
+      </div>
+
+      <button class="btn-print" onclick="window.print()">Gaskeunn!</button>
+    </div>
+
+    <div class="preview-area">
+      <div class="a4-paper" id="paper">
+        <div class="image-slot"><img class="prev" src="" /></div>
+        <div class="image-slot"><img class="prev" src="" /></div>
+        <div class="image-slot"><img class="prev" src="" /></div>
+        <div class="image-slot"><img class="prev" src="" /></div>
+      </div>
+    </div>
+
+    <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const previews = document.querySelectorAll(".prev");
+
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("drag-over");
+      });
+
+      ["dragleave", "drop"].forEach((ev) => {
+        dropZone.addEventListener(ev, () =>
+          dropZone.classList.remove("drag-over")
+        );
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        handleFile(e.dataTransfer.files[0]);
+      });
+
+      fileInput.addEventListener("change", (e) =>
+        handleFile(e.target.files[0])
+      );
+
+      function handleFile(file) {
+        if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            previews.forEach((img) => {
+              img.src = e.target.result;
+              img.style.display = "block";
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+  </body>
+</html>
