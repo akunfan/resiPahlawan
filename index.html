@@ -2,7 +2,7 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Eiger Store - Final System</title>
+    <title>Eiger Store System - Searchable Edition</title>
     <style>
       :root {
         --primary-red: #d9534f;
@@ -91,6 +91,12 @@
         background: #334155;
       }
 
+      #search-input {
+        margin-bottom: 8px;
+        border: 2px solid #cbd5e1;
+        background: #ffffff;
+      }
+
       .check-group {
         display: flex;
         align-items: center;
@@ -147,26 +153,22 @@
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
       }
 
-      /* Cari bagian .logo-eiger dan .logo-kurir di dalam kode Anda, lalu ganti dengan ini: */
-
-      .logo-eiger {
-        height: 55px; /* Sebelumnya 18px, dinaikkan agar lebih gagah */
-        width: auto;
-      }
-
-      .logo-kurir {
-        height: 55px; /* Sebelumnya 26px, dinaikkan agar brand kurir terlihat jelas */
-        max-width: 120px;
-        object-fit: contain;
-      }
-
       .header-resi {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid #000; /* Garis dibuat sedikit lebih tebal */
+        border-bottom: 2px solid #000;
         padding-bottom: 1px;
         margin-bottom: 15px;
+      }
+      .logo-eiger {
+        height: 55px;
+        width: auto;
+      }
+      .logo-kurir {
+        height: 55px;
+        max-width: 120px;
+        object-fit: contain;
       }
 
       .address-grid {
@@ -261,10 +263,16 @@
   </head>
   <body>
     <div class="input-panel">
-      <h2>Eiger Store Pahlawan</h2>
+      <h2>Eiger Store Editor</h2>
 
       <div class="saved-address-box">
         <label>Database Alamat (Google Sheets)</label>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Cari nama pelanggan..."
+          oninput="filterAddresses()"
+        />
         <select id="select-saved" onchange="loadAddress()">
           <option value="">-- Klik Sinkronkan --</option>
         </select>
@@ -295,7 +303,7 @@
         <input
           type="text"
           id="in-ammount"
-          placeholder="Contoh: Rp 500.000"
+          placeholder="Rp..."
           oninput="update()"
         />
       </div>
@@ -373,9 +381,7 @@
           <div>
             <span class="lbl-title">Penerima</span>
             <span id="out-penerima" class="name-txt">NAMA PENERIMA</span>
-            <p id="out-alamat" class="addr-txt">
-              Alamat tujuan akan tampil secara simetris di sini...
-            </p>
+            <p id="out-alamat" class="addr-txt">Alamat tujuan...</p>
           </div>
           <div style="text-align: right">
             <span class="lbl-title">Pengirim</span>
@@ -416,7 +422,7 @@
           </div>
           <div class="footer-cols">
             <span>Eiger Store Pare Kediri</span>
-            <span>@eiger.pare</span>
+            <span>Original Product</span>
           </div>
         </div>
       </div>
@@ -425,6 +431,7 @@
     <script>
       const CSV_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vSdKv0DKKXD9MM-TskgbqfExjisAal9Rwx6RfgXmGvDHyBzgShrteIb7sp1YbSn0-X_vnr-vA-R-l18/pub?output=csv";
+      let allAddresses = [];
 
       async function fetchSheetData() {
         const btn = document.querySelector(".sync-btn");
@@ -433,28 +440,47 @@
           const response = await fetch(CSV_URL);
           const data = await response.text();
           const rows = data.split("\n").slice(1);
-          const select = document.getElementById("select-saved");
-          select.innerHTML =
-            '<option value="">-- Pilih Alamat Pelanggan --</option>';
 
+          allAddresses = [];
           rows.forEach((row) => {
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             if (cols.length >= 2) {
               const nama = cols[0].replace(/"/g, "").trim();
               const alamat = cols[1].replace(/"/g, "").trim();
               if (nama !== "") {
-                const opt = document.createElement("option");
-                opt.value = JSON.stringify({ nama: nama, alamat: alamat });
-                opt.textContent = nama;
-                select.appendChild(opt);
+                allAddresses.push({ nama, alamat });
               }
             }
           });
+
+          renderDropdown(allAddresses);
           btn.innerText = "DATA TERUPDATE!";
           setTimeout(() => (btn.innerText = "SINKRONKAN DATA SEKARANG"), 2000);
         } catch (e) {
           btn.innerText = "GAGAL SINKRON";
         }
+      }
+
+      function renderDropdown(dataArray) {
+        const select = document.getElementById("select-saved");
+        select.innerHTML =
+          '<option value="">-- Pilih Alamat Pelanggan --</option>';
+        dataArray.forEach((item) => {
+          const opt = document.createElement("option");
+          opt.value = JSON.stringify({ nama: item.nama, alamat: item.alamat });
+          opt.textContent = item.nama;
+          select.appendChild(opt);
+        });
+      }
+
+      function filterAddresses() {
+        const keyword = document
+          .getElementById("search-input")
+          .value.toLowerCase();
+        const filtered = allAddresses.filter((item) =>
+          item.nama.toLowerCase().includes(keyword)
+        );
+        renderDropdown(filtered);
       }
 
       function loadAddress() {
